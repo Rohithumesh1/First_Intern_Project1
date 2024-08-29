@@ -65,8 +65,8 @@ h1 {
 }
 
 .circle {
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     border: 2px solid #333;
     margin: 10px auto;
@@ -75,6 +75,7 @@ h1 {
     background-color: #e6e6e6;
 }
 
+  
 .section {
     position: absolute;
     width: 50%;
