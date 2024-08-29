@@ -1,132 +1,275 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const addCircleBtn = document.getElementById('addCircleBtn');
-    const circlesContainer = document.getElementById('circlesContainer');
-    const submitBtn = document.getElementById('submitBtn');
-    const fractionInput = document.getElementById('fractionInput');
-    const scoreContainer = document.getElementById('scoreContainer');
+let circles = [];
 
-    let circleCount = 0;
+document.addEventListener('DOMContentLoaded', function() {
+  const addCircleBtn = document.getElementById('addCircleBtn');
+  const submitBtn = document.getElementById('submitBtn');
 
-    // Function to add a new circle
-    function addCircle() {
-        console.log("Add Circle Function Called");
-
-        const circleContainer = document.createElement('div');
-        circleContainer.className = 'circle-container';
-
-        const circle = document.createElement('div');
-        circle.className = 'circle';
-
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Remove circle';
-        removeBtn.addEventListener('click', () => {
-            circleContainer.remove();
-            circleCount--;
-            if (circleCount === 0) {
-                submitBtn.style.display = 'none';
-            }
-        });
-
-        const addSectionBtn = document.createElement('button');
-        addSectionBtn.textContent = 'Click to add section';
-        addSectionBtn.addEventListener('click', () => addSection(circle));
-
-        const removeSectionBtn = document.createElement('button');
-        removeSectionBtn.textContent = 'Click to remove section';
-        removeSectionBtn.addEventListener('click', () => removeSection(circle));
-
-        circleContainer.appendChild(circle);
-        circleContainer.appendChild(removeBtn);
-        circleContainer.appendChild(addSectionBtn);
-        circleContainer.appendChild(removeSectionBtn);
-
-        circlesContainer.appendChild(circleContainer);
-    }
-
-    // Event listener for the Add Circle button
-    addCircleBtn.addEventListener('click', () => {
-        console.log("Add Circle Button Clicked");
-        addCircle();
-        circleCount++;
-        if (circleCount > 0) {
-            submitBtn.style.display = 'inline-block';
-        }
-    });
-
-    // Function to add a section to the circle
-    function addSection(circle) {
-        const section = document.createElement('div');
-        section.className = 'circle-section';
-        section.style.backgroundColor = 'lightgray';
-
-        section.addEventListener('click', () => {
-            section.classList.toggle('active');
-        });
-
-        circle.appendChild(section);
-    }
-
-    // Function to remove a section from the circle
-    function removeSection(circle) {
-        const sections = circle.getElementsByClassName('circle-section');
-        if (sections.length > 0) {
-            sections[sections.length - 1].remove();
-        }
-    }
-
-    // Event listener for the Submit button
-    submitBtn.addEventListener('click', () => {
-        console.log("Submit Button Clicked");
-        const inputFraction = parseFraction(fractionInput.value);
-        const coloredFraction = calculateColoredFraction();
-
-        const score = calculateScore(inputFraction, coloredFraction);
-
-        scoreContainer.textContent = Score: ${score};
-    });
-
-    // Function to parse the fraction input
-    function parseFraction(fractionString) {
-        console.log("Parsing Fraction: ", fractionString);
-        let [whole, frac] = fractionString.split(' ');
-        let [numerator, denominator] = frac ? frac.split('/') : whole.split('/');
-        whole = frac ? parseInt(whole) : 0;
-        numerator = parseInt(numerator);
-        denominator = parseInt(denominator);
-        return { whole, numerator, denominator };
-    }
-
-    // Function to calculate the colored fraction
-    function calculateColoredFraction() {
-        let totalSections = 0;
-        let coloredSections = 0;
-
-        const circles = circlesContainer.getElementsByClassName('circle');
-        Array.from(circles).forEach(circle => {
-            const sections = circle.getElementsByClassName('circle-section');
-            totalSections += sections.length;
-            Array.from(sections).forEach(section => {
-                if (section.classList.contains('active')) {
-                    coloredSections++;
-                }
-            });
-        });
-
-        return { numerator: coloredSections, denominator: totalSections };
-    }
-
-    // Function to calculate the score based on input fraction and colored fraction
-    function calculateScore(input, colored) {
-        let score = 0;
-
-        if (input.whole === 0 && colored.denominator === 0) {
-            return 0;
-        }
-
-        if (colored.numerator === input.numerator) score += 1/2;
-        if (colored.denominator === input.denominator) score += 1/2;
-        if (input.whole > 0 && colored.numerator / colored.denominator === input.whole) score += 1/2;
-
-        return score;
-    }
+  addCircleBtn.addEventListener('click', addCircle);
+  submitBtn.addEventListener('click', submitFraction);
 });
+
+function createCircle() {
+  const circle = document.createElement('div');
+  circle.className = 'circle';
+  return circle;
+}
+
+function addCircle() {
+  const circlesContainer = document.getElementById('circlesContainer');
+  const circleContainer = document.createElement('div');
+  circleContainer.className = 'circle-container';
+
+  const circle = createCircle();
+
+  const controls = document.createElement('div');
+  controls.className = 'circle-controls';
+
+  const removeBtn = createButton('Remove circle', () => removeCircle(circleContainer));
+  const addSectionBtn = createButton('Add section', () => addSection(circle));
+  const removeSectionBtn = createButton('Remove section', () => removeSection(circle));
+
+  controls.appendChild(removeBtn);
+  controls.appendChild(addSectionBtn);
+  controls.appendChild(removeSectionBtn);
+
+  circleContainer.appendChild(circle);
+  circleContainer.appendChild(controls);
+
+  circlesContainer.appendChild(circleContainer);
+
+  circles.push(circle);
+
+  updateSubmitButton();
+}
+
+function createButton(text, onClick) {
+  const button = document.createElement('button');
+  button.textContent = text;
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+function removeCircle(circleContainer) {
+  circleContainer.remove();
+  circles = circles.filter(circle => circle !== circleContainer.querySelector('.circle'));
+  updateSubmitButton();
+}
+
+function addSection(circle) {
+  const sections = circle.querySelectorAll('.section');
+  if (sections.length >= 12) return; // Max 12 sections
+
+  const section = document.createElement('div');
+  section.className = 'section';
+
+  circle.appendChild(section);
+  updateSections(circle);
+
+  section.addEventListener('click', () => toggleSectionColor(section));
+}
+
+function removeSection(circle) {
+  const sections = circle.querySelectorAll('.section');
+  if (sections.length > 0) {
+    sections[sections.length - 1].remove();
+    updateSections(circle);
+  }
+}
+
+function updateSections(circle) {
+  const sections = circle.querySelectorAll('.section');
+  const totalSections = sections.length;
+  
+  sections.forEach((section, index) => {
+    const angle = (360 / totalSections) * index;
+    const skew = 90 - (360 / totalSections);
+    
+    if (totalSections === 1) {
+      section.style.transform = 'none';
+      section.style.width = '100%';
+      section.style.height = '100%';
+      section.style.top = '0';
+      section.style.left = '0';
+    } else if (totalSections === 2) {
+      section.style.transform = `rotate(${angle}deg)`;
+      section.style.width = '100%';
+      section.style.height = '50%';
+      section.style.top =  '0%';
+      section.style.left = '0';
+    } else if  (totalSections === 3) {
+      section.style.transform = `rotate(${angle}deg) skew(${150}deg)`;
+      section.style.width = '100%';
+      section.style.height = '100%';
+      section.style.top = '50%';
+      section.style.left = '50%';
+    } else  {
+      section.style.transform = `rotate(${angle}deg) skew(${skew}deg)`;
+      section.style.width = '50%';
+      section.style.height = '50%';
+      section.style.top = '50%';
+      section.style.left = '50%';
+    }
+  });
+}
+
+function toggleSectionColor(section) {
+  section.classList.toggle('colored');
+}
+
+function updateSubmitButton() {
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.style.display = circles.length > 0 ? 'inline-block' : 'none';
+}
+
+function submitFraction() {
+  const inputFraction = document.getElementById('fractionInput').value;
+  const parsedFraction = parseFraction(inputFraction);
+  const coloredFraction = calculateColoredFraction();
+
+  const score = calculateScore(parsedFraction, coloredFraction);
+
+  // Display the score and fractions for debugging
+  const scoreContainer = document.getElementById('scoreContainer');
+  scoreContainer.innerHTML = `Score: ${score}<br>`;
+  scoreContainer.innerHTML += `Your input: ${formatFraction(parsedFraction)}<br>`;
+  scoreContainer.innerHTML += `Colored fraction: ${coloredFraction.numerator}/${coloredFraction.denominator}`;
+
+  // Add feedback based on the score
+  if (score === 1) {
+    scoreContainer.innerHTML += "<br>Perfect!";
+  } else if (score >= 0.5) {
+    scoreContainer.innerHTML += "<br>Close!";
+  } else {
+    scoreContainer.innerHTML += "<br>Try again!";
+  }
+}
+
+// Make sure this event listener is properly set
+document.addEventListener('DOMContentLoaded', function() {
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.addEventListener('click', submitFraction);
+})
+
+// Helper function to simplify fractions
+function simplifyFraction(numerator, denominator) {
+  const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+  const divisor = gcd(Math.abs(numerator), denominator);
+  return {
+    numerator: numerator / divisor,
+    denominator: denominator / divisor
+  };
+}
+
+function parseFraction(input) {
+  // Remove any whitespace
+  input = input.replace(/\s/g, '');
+  
+  // Regular expressions for different fraction formats
+  const mixedFractionRegex = /^(-?\d+)\s*(\d+)\/(\d+)$/;
+  const simpleFractionRegex = /^(-?\d+)\/(\d+)$/;
+  const wholeNumberRegex = /^(-?\d+)$/;
+  
+  let whole = 0, numerator, denominator;
+  
+  if (mixedFractionRegex.test(input)) {
+    const [, w, num, den] = input.match(mixedFractionRegex);
+    whole = parseInt(w);
+    numerator = parseInt(num);
+    denominator = parseInt(den);
+  } else if (simpleFractionRegex.test(input)) {
+    const [, num, den] = input.match(simpleFractionRegex);
+    numerator = parseInt(num);
+    denominator = parseInt(den);
+  } else if (wholeNumberRegex.test(input)) {
+    whole = parseInt(input);
+    numerator = 0;
+    denominator = 1;
+  } else {
+    throw new Error('Invalid fraction format');
+  }
+  
+  // Convert to improper fraction
+  numerator = Math.abs(whole) * denominator + numerator;
+  if (whole < 0) numerator = -numerator;
+  
+  // Simplify the fraction
+  const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+  const divisor = gcd(Math.abs(numerator), denominator);
+  
+  return {
+    whole: 0,
+    numerator: numerator / divisor,
+    denominator: denominator / divisor
+  };
+}
+
+function calculateColoredFraction() {
+  let totalSections = 0;
+  let coloredSections = 0;
+  let wholeColoredCircles = 0;
+
+  circles.forEach(circle => {
+    const sections = circle.querySelectorAll('.section');
+    const coloredSectionsInCircle = Array.from(sections).filter(s => s.classList.contains('colored')).length;
+    
+    if (sections.length === coloredSectionsInCircle && sections.length === 1) {
+      wholeColoredCircles++;
+    } else {
+      totalSections += sections.length;
+      coloredSections += coloredSectionsInCircle;
+    }
+  });
+
+  // Add whole colored circles to the fraction
+  coloredSections += wholeColoredCircles * totalSections;
+
+  return simplifyFraction(coloredSections, totalSections);
+}
+
+function calculateScore(input, colored) {
+  let score = 0;
+  
+  // Compare fractions
+  const inputDecimal = input.numerator / input.denominator;
+  const coloredDecimal = colored.numerator / colored.denominator;
+  
+  if (inputDecimal === coloredDecimal) {
+    score = 1; // Exact match
+  } else {
+    const difference = Math.abs(inputDecimal - coloredDecimal);
+    
+    if (difference < 0.001) {
+      score = 0.5; // Close match
+    }
+  }
+
+  return score;
+}
+
+function formatFraction(fraction) {
+  const { whole, numerator, denominator } = fraction;
+  let formattedFraction = '';
+
+  if (whole !== 0) {
+    formattedFraction += whole;
+    if (numerator !== 0) {
+      formattedFraction += ' ';
+    }
+  }
+
+  if (numerator !== 0) {
+    formattedFraction += `${Math.abs(numerator)}/${denominator}`;
+  }
+
+  return formattedFraction || '0';
+}
+
+// Helper function to simplify fractions
+function simplifyFraction(numerator, denominator) {
+  const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+  const divisor = gcd(Math.abs(numerator), denominator);
+  return {
+    numerator: numerator / divisor,
+    denominator: denominator / divisor
+  };
+}
