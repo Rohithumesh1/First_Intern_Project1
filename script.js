@@ -81,9 +81,15 @@ function updateSections(circle) {
   const totalSections = sections.length;
   
   sections.forEach((section, index) => {
-    const angle = (360 / totalSections) * index;
-    const skew = 90 - (360 / totalSections);
-    
+    section.style.position = 'absolute';
+    section.style.width = '100%';
+    section.style.height = '100%';
+    section.style.top = '0';
+    section.style.left = '0';
+    section.style.transform = 'none';
+    section.style.clipPath = 'none';
+    section.style.borderRadius = '0';
+
     if (totalSections === 1) {
       section.style.transform = 'none';
       section.style.width = '100%';
@@ -91,23 +97,25 @@ function updateSections(circle) {
       section.style.top = '0';
       section.style.left = '0';
     } else if (totalSections === 2) {
-      section.style.transform = `rotate(${angle}deg)`;
-      section.style.width = '100%';
       section.style.height = '50%';
-      section.style.top =  '0%';
-      section.style.left = '0';
-    } else if  (totalSections === 3) {
-      section.style.transform = `rotate(${angle}deg) skew(${150}deg)`;
+      section.style.top = index === 0 ? '0' : '50%';
+      section.style.borderBottom = index === 0 ? '1px solid black' : 'none';
+    } else if (totalSections === 3) {
+      const angle = 120 * index;
+      section.style.transform = `rotate(${angle}deg) skew(150deg)`;
       section.style.width = '100%';
       section.style.height = '100%';
       section.style.top = '50%';
       section.style.left = '50%';
-    } else  {
-      section.style.transform = `rotate(${angle}deg) skew(${skew}deg)`;
+    } else {
+      // For 4 or more sections, use the original logic
+      const angle = (360 / totalSections) * index;
+      const skew = 90 - (360 / totalSections);
       section.style.width = '50%';
       section.style.height = '50%';
       section.style.top = '50%';
       section.style.left = '50%';
+      section.style.transform = `rotate(${angle}deg) skew(${skew}deg)`;
     }
   });
 }
