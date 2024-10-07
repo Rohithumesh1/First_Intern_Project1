@@ -1,3 +1,4 @@
+const MAX_CIRCLES = 6;
 let circles = [];
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -15,11 +16,19 @@ function createCircle() {
 }
 
 function addCircle() {
+  if (circles.length >= MAX_CIRCLES) {
+    alert(`You've reached the maximum limit of ${MAX_CIRCLES} circles.`);
+    return;
+  }
+
   const circlesContainer = document.getElementById('circlesContainer');
   const circleContainer = document.createElement('div');
   circleContainer.className = 'circle-container';
 
   const circle = createCircle();
+
+  // Add the first section automatically
+  addSection(circle);
 
   const controls = document.createElement('div');
   controls.className = 'circle-controls';
@@ -136,19 +145,40 @@ function submitFraction() {
 
   const score = calculateScore(parsedFraction, coloredFraction);
 
-  // Display the score and fractions for debugging
-  const scoreContainer = document.getElementById('scoreContainer');
-  scoreContainer.innerHTML = `Score: ${score}<br>`;
-  scoreContainer.innerHTML += `Your input: ${formatFraction(parsedFraction)}<br>`;
-  scoreContainer.innerHTML += `Colored fraction: ${coloredFraction.numerator}/${coloredFraction.denominator}`;
+  // Update the score display
+  updateScoreDisplay(parsedFraction, coloredFraction, score);
+}
 
-  // Add feedback based on the score
+function updateScoreDisplay(inputFraction, coloredFraction, score) {
+  const scoreContainer = document.getElementById('scoreContainer');
+  
+  scoreContainer.innerHTML = `
+    <div class="score-row">
+      <span class="score-label">Your Input:</span>
+      <span class="score-value">${formatFraction(inputFraction)}</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">Colored Fraction:</span>
+      <span class="score-value">${coloredFraction.numerator}/${coloredFraction.denominator}</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">Score:</span>
+      <span class="score-value">${score}</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">Feedback:</span>
+      <span class="score-value">${getFeedback(score)}</span>
+    </div>
+  `;
+}
+
+function getFeedback(score) {
   if (score === 1) {
-    scoreContainer.innerHTML += "<br>Perfect!";
+    return "Perfect!";
   } else if (score >= 0.5) {
-    scoreContainer.innerHTML += "<br>Close!";
+    return "Close!";
   } else {
-    scoreContainer.innerHTML += "<br>Try again!";
+    return "Try again!";
   }
 }
 
