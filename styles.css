@@ -125,7 +125,7 @@ h1 {
     background-color: #007bb5;
 }
 
-/* Updated styles for the score container */
+
 #scoreContainer {
     margin-top: 20px;
     background-color: #ffffff;
@@ -152,7 +152,7 @@ h1 {
     font-weight: 600;
 }
 
-/* New style for the last score row (no margin at bottom) */
+
 .score-row:last-child {
     margin-bottom: 0;
 }
