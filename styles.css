@@ -7,6 +7,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto;  /* Add this line to enable vertical scrolling */
 }
 
 .container {
@@ -27,19 +28,7 @@ h1 {
 }
 
 .input-section {
-    position: sticky;
-    top: 0;
-    background-color: white;
-    padding: 20px 0;
-    z-index: 10;
-}
-
-#circlesContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 #fractionInput {
@@ -125,7 +114,6 @@ h1 {
     background-color: #007bb5;
 }
 
-
 #scoreContainer {
     margin-top: 20px;
     background-color: #ffffff;
@@ -156,3 +144,32 @@ h1 {
 .score-row:last-child {
     margin-bottom: 0;
 }
+
+const style = document.createElement('style');
+style.textContent = 
+  .circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #333;
+    background-color: #e6e6e6;
+  }
+  .section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 50%;
+    transform-origin: 0 0;
+    border: 1px solid #333;
+    background-color: lightgray;
+    cursor: pointer;
+  }
+  .section.colored {
+    background-color: orange;
+  }
+;
+document.head.appendChild(style);
+
