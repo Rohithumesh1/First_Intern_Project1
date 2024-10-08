@@ -27,7 +27,7 @@ function addCircle() {
 
   const circle = createCircle();
 
-  // Add the first section automatically
+  
   addSection(circle);
 
   const controls = document.createElement('div');
@@ -66,7 +66,7 @@ function removeCircle(circleContainer) {
 
 function addSection(circle) {
   const sections = circle.querySelectorAll('.section');
-  if (sections.length >= 12) return; // Max 12 sections
+  if (sections.length >= 12) return; 
 
   const section = document.createElement('div');
   section.className = 'section';
@@ -117,7 +117,7 @@ function updateSections(circle) {
       section.style.top = '50%';
       section.style.left = '50%';
     } else {
-      // For 4 or more sections, use the original logic
+      
       const angle = (360 / totalSections) * index;
       const skew = 90 - (360 / totalSections);
       section.style.width = '50%';
@@ -145,7 +145,7 @@ function submitFraction() {
 
   const score = calculateScore(parsedFraction, coloredFraction);
 
-  // Update the score display
+  
   updateScoreDisplay(parsedFraction, coloredFraction, score);
 }
 
@@ -182,13 +182,13 @@ function getFeedback(score) {
   }
 }
 
-// Make sure this event listener is properly set
+
 document.addEventListener('DOMContentLoaded', function() {
   const submitBtn = document.getElementById('submitBtn');
   submitBtn.addEventListener('click', submitFraction);
 })
 
-// Helper function to simplify fractions
+
 function simplifyFraction(numerator, denominator) {
   const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
   const divisor = gcd(Math.abs(numerator), denominator);
@@ -199,10 +199,10 @@ function simplifyFraction(numerator, denominator) {
 }
 
 function parseFraction(input) {
-  // Remove any whitespace
+  
   input = input.replace(/\s/g, '');
   
-  // Regular expressions for different fraction formats
+  
   const mixedFractionRegex = /^(-?\d+)\s*(\d+)\/(\d+)$/;
   const simpleFractionRegex = /^(-?\d+)\/(\d+)$/;
   const wholeNumberRegex = /^(-?\d+)$/;
@@ -226,11 +226,11 @@ function parseFraction(input) {
     throw new Error('Invalid fraction format');
   }
   
-  // Convert to improper fraction
+  
   numerator = Math.abs(whole) * denominator + numerator;
   if (whole < 0) numerator = -numerator;
   
-  // Simplify the fraction
+  
   const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
   const divisor = gcd(Math.abs(numerator), denominator);
   
@@ -258,7 +258,7 @@ function calculateColoredFraction() {
     }
   });
 
-  // Add whole colored circles to the fraction
+  
   coloredSections += wholeColoredCircles * totalSections;
 
   return simplifyFraction(coloredSections, totalSections);
@@ -267,17 +267,17 @@ function calculateColoredFraction() {
 function calculateScore(input, colored) {
   let score = 0;
   
-  // Compare fractions
+  
   const inputDecimal = input.numerator / input.denominator;
   const coloredDecimal = colored.numerator / colored.denominator;
   
   if (inputDecimal === coloredDecimal) {
-    score = 1; // Exact match
+    score = 1; 
   } else {
     const difference = Math.abs(inputDecimal - coloredDecimal);
     
     if (difference < 0.001) {
-      score = 0.5; // Close match
+      score = 0.5; 
     }
   }
 
@@ -302,7 +302,7 @@ function formatFraction(fraction) {
   return formattedFraction || '0';
 }
 
-// Helper function to simplify fractions
+
 function simplifyFraction(numerator, denominator) {
   const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
   const divisor = gcd(Math.abs(numerator), denominator);
