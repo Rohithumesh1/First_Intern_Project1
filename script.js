@@ -258,6 +258,10 @@ function calculateColoredFraction() {
     }
   });
 
+  // If only whole circles are present
+  if (totalSections === 0 && wholeColoredCircles > 0) {
+    return { numerator: 1, denominator: 1 };
+  }
   
   coloredSections += wholeColoredCircles * totalSections;
 
